@@ -25,31 +25,128 @@ let ProjectsService = class ProjectsService {
         const createdProject = new this.projectModel(createProjectDto);
         return createdProject.save();
     }
-    async findAll() {
-        return this.projectModel.find().exec();
+    async findAll(filters = {}) {
+        const query = this.projectModel.find();
+        if (filters.category) {
+            query.where('category').equals(filters.category);
+        }
+        if (filters.semester) {
+            query.where('semester').equals(filters.semester);
+        }
+        if (filters.course) {
+            query.where('course').equals(filters.course);
+        }
+        if (filters.year) {
+            query.where('year').equals(filters.year);
+        }
+        if (filters.technologies) {
+            query.where('technologies').in(filters.technologies.split(','));
+        }
+        if (filters.search) {
+            query.or([
+                { title: { $regex: filters.search, $options: 'i' } },
+                { description: { $regex: filters.search, $options: 'i' } },
+                { tags: { $regex: filters.search, $options: 'i' } }
+            ]);
+        }
+        query.populate('createdBy', 'name email')
+            .populate('collaborators', 'name email')
+            .sort({ createdAt: -1 });
+        return query.exec();
     }
     async findOne(id) {
-        const project = await this.projectModel.findById(id).exec();
+        const project = await this.projectModel
+            .findById(id)
+            .populate('createdBy', 'name email')
+            .populate('collaborators', 'name email')
+            .exec();
         if (!project) {
             throw new common_1.NotFoundException(`Project with ID ${id} not found`);
         }
+        project.views += 1;
+        await project.save();
         return project;
     }
-    async update(id, updateProjectDto) {
+    async update(id, updateProjectDto, user) {
+        const project = await this.projectModel.findById(id);
+        if (!project) {
+            throw new common_1.NotFoundException(`Project with ID ${id} not found`);
+        }
+        if (project.createdBy.toString() !== user._id.toString() && !user.roles?.includes('admin')) {
+            throw new common_1.ForbiddenException('You are not authorized to update this project');
+        }
         const updatedProject = await this.projectModel
             .findByIdAndUpdate(id, updateProjectDto, { new: true })
+            .populate('createdBy', 'name email')
+            .populate('collaborators', 'name email')
             .exec();
-        if (!updatedProject) {
-            throw new common_1.NotFoundException(`Project with ID ${id} not found`);
-        }
         return updatedProject;
     }
-    async remove(id) {
-        const deletedProject = await this.projectModel.findByIdAndDelete(id).exec();
-        if (!deletedProject) {
+    async remove(id, user) {
+        const project = await this.projectModel.findById(id);
+        if (!project) {
             throw new common_1.NotFoundException(`Project with ID ${id} not found`);
         }
-        return deletedProject;
+        if (project.createdBy.toString() !== user._id.toString() && !user.roles?.includes('admin')) {
+            throw new common_1.ForbiddenException('You are not authorized to delete this project');
+        }
+        return this.projectModel.findByIdAndDelete(id).exec();
+    }
+    async joinProject(id, user) {
+        const project = await this.projectModel.findById(id);
+        if (!project) {
+            throw new common_1.NotFoundException(`Project with ID ${id} not found`);
+        }
+        if (!project.collaborators.includes(user._id)) {
+            project.collaborators.push(user._id);
+            await project.save();
+        }
+        return this.projectModel
+            .findById(id)
+            .populate('createdBy', 'name email')
+            .populate('collaborators', 'name email')
+            .exec();
+    }
+    async leaveProject(id, user) {
+        const project = await this.projectModel.findById(id);
+        if (!project) {
+            throw new common_1.NotFoundException(`Project with ID ${id} not found`);
+        }
+        project.collaborators = project.collaborators.filter(collaborator => collaborator.toString() !== user._id.toString());
+        await project.save();
+        return this.projectModel
+            .findById(id)
+            .populate('createdBy', 'name email')
+            .populate('collaborators', 'name email')
+            .exec();
+    }
+    async likeProject(id, user) {
+        const project = await this.projectModel.findById(id);
+        if (!project) {
+            throw new common_1.NotFoundException(`Project with ID ${id} not found`);
+        }
+        if (!project.likes.includes(user._id)) {
+            project.likes.push(user._id);
+            await project.save();
+        }
+        return this.projectModel
+            .findById(id)
+            .populate('createdBy', 'name email')
+            .populate('collaborators', 'name email')
+            .exec();
+    }
+    async unlikeProject(id, user) {
+        const project = await this.projectModel.findById(id);
+        if (!project) {
+            throw new common_1.NotFoundException(`Project with ID ${id} not found`);
+        }
+        project.likes = project.likes.filter(like => like.toString() !== user._id.toString());
+        await project.save();
+        return this.projectModel
+            .findById(id)
+            .populate('createdBy', 'name email')
+            .populate('collaborators', 'name email')
+            .exec();
     }
 };
 exports.ProjectsService = ProjectsService;

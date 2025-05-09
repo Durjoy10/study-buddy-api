@@ -11,29 +11,38 @@ export class Project {
     @Prop({ required: true })
     description: string;
 
+    @Prop({ required: true })
+    category: string;
+
+    @Prop({ required: true })
+    semester: string;
+
+    @Prop({ required: true })
+    course: string;
+
+    @Prop({ required: true })
+    year: number;
+
+    @Prop({ type: Types.ObjectId, ref: 'User', required: true })
+    createdBy: Types.ObjectId;
+
     @Prop([String])
     technologies: string[];
 
+    @Prop([String])
+    tags: string[];
+
     @Prop()
     thumbnailUrl: string;
+
+    @Prop()
+    fileURL: string;
 
     @Prop()
     repositoryUrl: string;
 
     @Prop()
     demoUrl: string;
-
-    @Prop()
-    course: string;
-
-    @Prop()
-    semester: string;
-
-    @Prop()
-    year: number;
-
-    @Prop({ type: Types.ObjectId, ref: 'User', required: true })
-    createdBy: Types.ObjectId;
 
     @Prop([{ type: Types.ObjectId, ref: 'User' }])
     collaborators: Types.ObjectId[];

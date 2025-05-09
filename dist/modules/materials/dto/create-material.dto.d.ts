@@ -1,21 +1,11 @@
-export declare enum MaterialType {
-    Notes = "Notes",
-    Book = "Book",
-    Slides = "Slides",
-    Assignment = "Assignment",
-    Other = "Other"
-}
-export declare class CreateMaterialDto {
+export declare class CreateMarketplaceItemDto {
     title: string;
     description: string;
-    course: string;
-    type: MaterialType;
-    fileUrl: string;
-    thumbnailUrl?: string;
+    condition: string;
+    category: string;
+    sellerName: string;
+    sellerNumber: string;
+    images: string[];
     price: number;
-    department: string;
-    semester?: string;
-    year?: number;
-    tags?: string[];
-    isApproved?: boolean;
+    url?: string;
 }

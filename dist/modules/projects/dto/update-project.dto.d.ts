@@ -1,8 +1,16 @@
+import { Types } from 'mongoose';
 export declare class UpdateProjectDto {
     title?: string;
     description?: string;
-    members?: string[];
+    category?: string;
+    semester?: string;
+    course?: string;
+    year?: number;
+    technologies?: string[];
     tags?: string[];
-    status?: string;
-    endDate?: Date;
+    thumbnailUrl?: string;
+    fileURL?: string;
+    repositoryUrl?: string;
+    demoUrl?: string;
+    collaborators?: Types.ObjectId[];
 }

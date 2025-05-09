@@ -6,6 +6,13 @@ import { CreatePostDto } from './dto/create-post.dto';
 import { Comment } from './schemas/comment.schema';
 import { Post } from './schemas/post.schema';
 
+type PopulatedAuthor = {
+    _id: Types.ObjectId;
+    name: string;
+    email: string;
+    profilePicture: string | null;
+};
+
 @Injectable()
 export class ForumService {
     constructor(
@@ -19,7 +26,20 @@ export class ForumService {
             ...createPostDto,
             author: userId,
         });
-        return post.save();
+        await post.save();
+        // Return the populated post
+        const populatedPost = await this.postModel.findById(post._id)
+            .populate('author', 'name email profilePicture')
+            .exec();
+        if (!populatedPost.author) {
+            (populatedPost.author as unknown as PopulatedAuthor) = {
+                _id: userId,
+                name: "Anonymous",
+                email: "anonymous@example.com",
+                profilePicture: null
+            };
+        }
+        return populatedPost;
     }
 
     async findAllPosts(): Promise<Post[]> {
@@ -85,7 +105,7 @@ export class ForumService {
             ...createCommentDto,
             author: userId,
         });
-        const savedComment = await comment.save();
+        await comment.save();
 
         // Update post's comment count
         await this.postModel.findByIdAndUpdate(
@@ -93,7 +113,22 @@ export class ForumService {
             { $inc: { commentsCount: 1 } }
         ).exec();
 
-        return savedComment;
+        // Return the populated comment
+        const populatedComment = await this.commentModel.findById(comment._id)
+            .populate('author', 'name email profilePicture')
+            .populate('parentComment')
+            .exec();
+
+        if (!populatedComment.author) {
+            (populatedComment.author as unknown as PopulatedAuthor) = {
+                _id: userId,
+                name: "Anonymous",
+                email: "anonymous@example.com",
+                profilePicture: null
+            };
+        }
+
+        return populatedComment;
     }
 
     async findCommentsByPost(postId: string): Promise<Comment[]> {
@@ -163,5 +198,21 @@ export class ForumService {
         ).exec();
 
         return { comment, post };
+    }
+
+    async getForumStats(): Promise<{ totalPosts: number; totalComments: number; totalViews: number }> {
+        const [totalPosts, totalComments, totalViews] = await Promise.all([
+            this.postModel.countDocuments(),
+            this.commentModel.countDocuments(),
+            this.postModel.aggregate([
+                { $group: { _id: null, total: { $sum: "$views" } } }
+            ]).then(result => result[0]?.total || 0)
+        ]);
+
+        return {
+            totalPosts,
+            totalComments,
+            totalViews
+        };
     }
 } 

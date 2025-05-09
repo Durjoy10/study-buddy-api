@@ -21,4 +21,9 @@ export class CreatePaperDto {
     @IsEmail()
     @IsNotEmpty()
     email: string;
+
+    @ApiProperty({ description: 'Name of the uploader' })
+    @IsString()
+    @IsNotEmpty()
+    name: string;
 } 

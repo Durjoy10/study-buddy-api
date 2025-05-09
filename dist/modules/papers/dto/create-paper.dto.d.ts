@@ -3,4 +3,5 @@ export declare class CreatePaperDto {
     subject: string;
     semester: string;
     email: string;
+    name: string;
 }

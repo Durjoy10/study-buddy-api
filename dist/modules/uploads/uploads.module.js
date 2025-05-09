@@ -8,13 +8,26 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UploadsModule = void 0;
 const common_1 = require("@nestjs/common");
+const mongoose_1 = require("@nestjs/mongoose");
 const uploads_controller_1 = require("./uploads.controller");
 const uploads_service_1 = require("./uploads.service");
+const file_schema_1 = require("./schemas/file.schema");
+const fs = require("fs");
+const path = require("path");
 let UploadsModule = class UploadsModule {
+    onModuleInit() {
+        const uploadsDir = path.join(process.cwd(), 'uploads');
+        if (!fs.existsSync(uploadsDir)) {
+            fs.mkdirSync(uploadsDir, { recursive: true });
+        }
+    }
 };
 exports.UploadsModule = UploadsModule;
 exports.UploadsModule = UploadsModule = __decorate([
     (0, common_1.Module)({
+        imports: [
+            mongoose_1.MongooseModule.forFeature([{ name: file_schema_1.File.name, schema: file_schema_1.FileSchema }]),
+        ],
         controllers: [uploads_controller_1.UploadsController],
         providers: [uploads_service_1.UploadsService],
         exports: [uploads_service_1.UploadsService],

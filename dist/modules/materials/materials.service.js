@@ -25,21 +25,17 @@ let MaterialsService = class MaterialsService {
     }
     async create(createMaterialDto, sellerId) {
         const material = new this.materialModel({
-            ...createMaterialDto,
-            seller: sellerId,
-            downloads: 0,
+            ...createMaterialDto
         });
         return material.save();
     }
     async findAll(query = {}) {
         return this.materialModel.find(query)
-            .populate('seller', 'name email profilePicture')
             .sort({ createdAt: -1 })
             .exec();
     }
     async findOne(id) {
         const material = await this.materialModel.findById(id)
-            .populate('seller', 'name email profilePicture')
             .exec();
         if (!material) {
             throw new common_1.NotFoundException('Material not found');
@@ -75,7 +71,6 @@ let MaterialsService = class MaterialsService {
         const purchase = new this.purchaseModel({
             material: materialId,
             buyer: buyerId,
-            seller: material.seller,
             price: material.price,
             status: 'Pending',
         });
@@ -131,7 +126,6 @@ let MaterialsService = class MaterialsService {
                 { tags: { $in: [new RegExp(query, 'i')] } },
             ],
         })
-            .populate('seller', 'name email profilePicture')
             .sort({ createdAt: -1 })
             .exec();
     }

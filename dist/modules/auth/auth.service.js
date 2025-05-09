@@ -20,27 +20,77 @@ let AuthService = class AuthService {
         this.jwtService = jwtService;
     }
     async validateUser(email, password) {
-        const user = await this.usersService.findByEmail(email);
-        if (user && await bcrypt.compare(password, user.password)) {
-            const { password, ...result } = user;
+        try {
+            const user = await this.usersService.findByEmail(email);
+            const isPasswordValid = await bcrypt.compare(password, user.password);
+            if (!isPasswordValid) {
+                return null;
+            }
+            const { password: _, ...result } = user.toObject();
             return result;
         }
-        return null;
+        catch (error) {
+            return null;
+        }
     }
-    async login(user) {
-        const payload = { email: user.email, sub: user._id, roles: user.roles };
-        return {
-            access_token: this.jwtService.sign(payload),
-        };
+    async register(data) {
+        try {
+            const existingUser = await this.usersService.findByEmail(data.email).catch(() => null);
+            if (existingUser) {
+                throw new common_1.UnauthorizedException('User already exists');
+            }
+            const hashedPassword = await bcrypt.hash(data.password, 10);
+            const user = await this.usersService.create({
+                ...data,
+                password: hashedPassword,
+            });
+            const token = this.jwtService.sign({
+                email: user.email,
+                name: user.name,
+                sub: user._id
+            });
+            const { password, ...result } = user.toObject();
+            return {
+                user: result,
+                access_token: token
+            };
+        }
+        catch (error) {
+            throw new common_1.UnauthorizedException(error.message);
+        }
     }
-    async register(registerDto) {
-        const hashedPassword = await bcrypt.hash(registerDto.password, 10);
-        const user = await this.usersService.create({
-            ...registerDto,
-            password: hashedPassword,
-        });
-        const { password, ...result } = user;
-        return result;
+    async login(data) {
+        try {
+            const user = await this.usersService.findByEmail(data.email);
+            const isPasswordValid = await bcrypt.compare(data.password, user.password);
+            if (!isPasswordValid) {
+                throw new common_1.UnauthorizedException('Invalid credentials');
+            }
+            const token = this.jwtService.sign({
+                email: user.email,
+                name: user.name,
+                sub: user._id
+            });
+            const { password, ...result } = user.toObject();
+            return {
+                user: result,
+                access_token: token
+            };
+        }
+        catch (error) {
+            throw new common_1.UnauthorizedException('Invalid credentials');
+        }
+    }
+    async getCurrentUser(token) {
+        try {
+            const payload = this.jwtService.verify(token);
+            const user = await this.usersService.findOne(payload.sub);
+            const { password, ...result } = user.toObject();
+            return result;
+        }
+        catch (error) {
+            throw new common_1.UnauthorizedException('Invalid token');
+        }
     }
 };
 exports.AuthService = AuthService;

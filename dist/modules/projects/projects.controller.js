@@ -21,38 +21,54 @@ const roles_guard_1 = require("../../common/guards/roles.guard");
 const create_project_dto_1 = require("./dto/create-project.dto");
 const update_project_dto_1 = require("./dto/update-project.dto");
 const projects_service_1 = require("./projects.service");
+const mongoose_1 = require("mongoose");
 let ProjectsController = class ProjectsController {
     constructor(projectsService) {
         this.projectsService = projectsService;
     }
-    create(createProjectDto) {
+    create(createProjectDto, req) {
+        createProjectDto.createdBy = new mongoose_1.Types.ObjectId(req.user._id);
         return this.projectsService.create(createProjectDto);
     }
-    findAll() {
-        return this.projectsService.findAll();
+    findAll(filters) {
+        return this.projectsService.findAll(filters);
     }
     findOne(id) {
         return this.projectsService.findOne(id);
     }
-    update(id, updateProjectDto) {
-        return this.projectsService.update(id, updateProjectDto);
+    update(id, updateProjectDto, req) {
+        return this.projectsService.update(id, updateProjectDto, req.user);
     }
-    remove(id) {
-        return this.projectsService.remove(id);
+    remove(id, req) {
+        return this.projectsService.remove(id, req.user);
+    }
+    joinProject(id, req) {
+        return this.projectsService.joinProject(id, req.user);
+    }
+    leaveProject(id, req) {
+        return this.projectsService.leaveProject(id, req.user);
+    }
+    likeProject(id, req) {
+        return this.projectsService.likeProject(id, req.user);
+    }
+    unlikeProject(id, req) {
+        return this.projectsService.unlikeProject(id, req.user);
     }
 };
 exports.ProjectsController = ProjectsController;
 __decorate([
     (0, common_1.Post)(),
     __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.Req)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [create_project_dto_1.CreateProjectDto]),
+    __metadata("design:paramtypes", [create_project_dto_1.CreateProjectDto, Object]),
     __metadata("design:returntype", void 0)
 ], ProjectsController.prototype, "create", null);
 __decorate([
     (0, common_1.Get)(),
+    __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], ProjectsController.prototype, "findAll", null);
 __decorate([
@@ -66,8 +82,9 @@ __decorate([
     (0, common_1.Patch)(':id'),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
+    __param(2, (0, common_1.Req)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, update_project_dto_1.UpdateProjectDto]),
+    __metadata("design:paramtypes", [String, update_project_dto_1.UpdateProjectDto, Object]),
     __metadata("design:returntype", void 0)
 ], ProjectsController.prototype, "update", null);
 __decorate([
@@ -75,10 +92,43 @@ __decorate([
     (0, roles_decorator_1.Roles)('admin'),
     (0, common_1.UseGuards)(roles_guard_1.RolesGuard),
     __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Req)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", void 0)
 ], ProjectsController.prototype, "remove", null);
+__decorate([
+    (0, common_1.Post)(':id/join'),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Req)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", void 0)
+], ProjectsController.prototype, "joinProject", null);
+__decorate([
+    (0, common_1.Post)(':id/leave'),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Req)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", void 0)
+], ProjectsController.prototype, "leaveProject", null);
+__decorate([
+    (0, common_1.Post)(':id/like'),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Req)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", void 0)
+], ProjectsController.prototype, "likeProject", null);
+__decorate([
+    (0, common_1.Post)(':id/unlike'),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Req)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", void 0)
+], ProjectsController.prototype, "unlikeProject", null);
 exports.ProjectsController = ProjectsController = __decorate([
     (0, swagger_1.ApiTags)('projects'),
     (0, common_1.Controller)('projects'),

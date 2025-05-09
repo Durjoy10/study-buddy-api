@@ -24,13 +24,41 @@ __decorate([
     __metadata("design:type", String)
 ], Project.prototype, "description", void 0);
 __decorate([
+    (0, mongoose_1.Prop)({ required: true }),
+    __metadata("design:type", String)
+], Project.prototype, "category", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({ required: true }),
+    __metadata("design:type", String)
+], Project.prototype, "semester", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({ required: true }),
+    __metadata("design:type", String)
+], Project.prototype, "course", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({ required: true }),
+    __metadata("design:type", Number)
+], Project.prototype, "year", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({ type: mongoose_2.Types.ObjectId, ref: 'User', required: true }),
+    __metadata("design:type", mongoose_2.Types.ObjectId)
+], Project.prototype, "createdBy", void 0);
+__decorate([
     (0, mongoose_1.Prop)([String]),
     __metadata("design:type", Array)
 ], Project.prototype, "technologies", void 0);
 __decorate([
+    (0, mongoose_1.Prop)([String]),
+    __metadata("design:type", Array)
+], Project.prototype, "tags", void 0);
+__decorate([
     (0, mongoose_1.Prop)(),
     __metadata("design:type", String)
 ], Project.prototype, "thumbnailUrl", void 0);
+__decorate([
+    (0, mongoose_1.Prop)(),
+    __metadata("design:type", String)
+], Project.prototype, "fileURL", void 0);
 __decorate([
     (0, mongoose_1.Prop)(),
     __metadata("design:type", String)
@@ -39,22 +67,6 @@ __decorate([
     (0, mongoose_1.Prop)(),
     __metadata("design:type", String)
 ], Project.prototype, "demoUrl", void 0);
-__decorate([
-    (0, mongoose_1.Prop)(),
-    __metadata("design:type", String)
-], Project.prototype, "course", void 0);
-__decorate([
-    (0, mongoose_1.Prop)(),
-    __metadata("design:type", String)
-], Project.prototype, "semester", void 0);
-__decorate([
-    (0, mongoose_1.Prop)(),
-    __metadata("design:type", Number)
-], Project.prototype, "year", void 0);
-__decorate([
-    (0, mongoose_1.Prop)({ type: mongoose_2.Types.ObjectId, ref: 'User', required: true }),
-    __metadata("design:type", mongoose_2.Types.ObjectId)
-], Project.prototype, "createdBy", void 0);
 __decorate([
     (0, mongoose_1.Prop)([{ type: mongoose_2.Types.ObjectId, ref: 'User' }]),
     __metadata("design:type", Array)

@@ -6,6 +6,7 @@ import { RolesGuard } from '../../common/guards/roles.guard';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { CreatePostDto } from './dto/create-post.dto';
 import { ForumService } from './forum.service';
+import { Types } from 'mongoose';
 
 @ApiTags('forum')
 @Controller('forum')
@@ -14,11 +15,12 @@ export class ForumController {
 
     // Post endpoints
     @Post('posts')
-    @UseGuards(JwtAuthGuard)
+    // @UseGuards(JwtAuthGuard) // Removed for open posting
     @ApiOperation({ summary: 'Create a new post' })
     @ApiResponse({ status: 201, description: 'Post created successfully' })
-    async createPost(@Body() createPostDto: CreatePostDto, @Request() req) {
-        return this.forumService.createPost(createPostDto, req.user._id);
+    async createPost(@Body() createPostDto: CreatePostDto) {
+        // Pass the dummy author ObjectId as the second argument
+        return this.forumService.createPost(createPostDto, new Types.ObjectId("000000000000000000000000"));
     }
 
     @Get('posts')
@@ -60,10 +62,11 @@ export class ForumController {
 
     // Comment endpoints
     @Post('comments')
-    @UseGuards(JwtAuthGuard)
     @ApiOperation({ summary: 'Create a new comment' })
-    async createComment(@Body() createCommentDto: CreateCommentDto, @Request() req) {
-        return this.forumService.createComment(createCommentDto, req.user._id);
+    async createComment(@Body() createCommentDto: CreateCommentDto) {
+        // Use a default author ID for anonymous comments
+        const defaultAuthorId = new Types.ObjectId('000000000000000000000000');
+        return this.forumService.createComment(createCommentDto, defaultAuthorId);
     }
 
     @Get('posts/:postId/comments')
@@ -101,5 +104,11 @@ export class ForumController {
     @ApiOperation({ summary: 'Mark a comment as an answer' })
     async markCommentAsAnswer(@Param('id') id: string) {
         return this.forumService.markCommentAsAnswer(id);
+    }
+
+    @Get('stats')
+    @ApiOperation({ summary: 'Get forum statistics' })
+    async getForumStats() {
+        return this.forumService.getForumStats();
     }
 } 

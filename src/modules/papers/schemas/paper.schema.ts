@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Document, Types } from 'mongoose';
 
 export type PaperDocument = Paper & Document;
 
@@ -19,6 +19,18 @@ export class Paper {
 
     @Prop({ required: true })
     filePath: string;
+
+    @Prop({
+        required: true,
+        type: {
+            name: { type: String, required: true },
+            email: { type: String, required: true }
+        }
+    })
+    uploadedBy: {
+        name: string;
+        email: string;
+    };
 }
 
 export const PaperSchema = SchemaFactory.createForClass(Paper); 

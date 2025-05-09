@@ -1,7 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, Types } from 'mongoose';
-
-export type MaterialDocument = Material & Document;
+import { Document } from 'mongoose';
 
 @Schema({ timestamps: true })
 export class Material {
@@ -12,40 +10,26 @@ export class Material {
     description: string;
 
     @Prop({ required: true })
-    course: string;
-
-    @Prop({ enum: ['Notes', 'Book', 'Slides', 'Assignment', 'Other'], required: true })
-    type: string;
+    condition: string;
 
     @Prop({ required: true })
-    fileUrl: string;
-
-    @Prop()
-    thumbnailUrl: string;
-
-    @Prop({ default: 0 })
-    price: number;
-
-    @Prop({ type: Types.ObjectId, ref: 'User', required: true })
-    seller: Types.ObjectId;
-
-    @Prop({ default: 0 })
-    downloads: number;
+    category: string;
 
     @Prop({ required: true })
-    department: string;
+    sellerName: string;
 
-    @Prop()
-    semester: string;
-
-    @Prop()
-    year: number;
+    @Prop({ required: true })
+    sellerNumber: string;
 
     @Prop([String])
-    tags: string[];
+    images: string[];
 
-    @Prop({ default: false })
-    isApproved: boolean;
+    @Prop({ required: true, default: 0 })
+    price: number;
+
+    @Prop()
+    url: string;
 }
 
+export type MaterialDocument = Material & Document;
 export const MaterialSchema = SchemaFactory.createForClass(Material); 

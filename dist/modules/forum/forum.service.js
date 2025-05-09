@@ -28,7 +28,19 @@ let ForumService = class ForumService {
             ...createPostDto,
             author: userId,
         });
-        return post.save();
+        await post.save();
+        const populatedPost = await this.postModel.findById(post._id)
+            .populate('author', 'name email profilePicture')
+            .exec();
+        if (!populatedPost.author) {
+            populatedPost.author = {
+                _id: userId,
+                name: "Anonymous",
+                email: "anonymous@example.com",
+                profilePicture: null
+            };
+        }
+        return populatedPost;
     }
     async findAllPosts() {
         return this.postModel.find()
@@ -80,9 +92,21 @@ let ForumService = class ForumService {
             ...createCommentDto,
             author: userId,
         });
-        const savedComment = await comment.save();
+        await comment.save();
         await this.postModel.findByIdAndUpdate(createCommentDto.post, { $inc: { commentsCount: 1 } }).exec();
-        return savedComment;
+        const populatedComment = await this.commentModel.findById(comment._id)
+            .populate('author', 'name email profilePicture')
+            .populate('parentComment')
+            .exec();
+        if (!populatedComment.author) {
+            populatedComment.author = {
+                _id: userId,
+                name: "Anonymous",
+                email: "anonymous@example.com",
+                profilePicture: null
+            };
+        }
+        return populatedComment;
     }
     async findCommentsByPost(postId) {
         return this.commentModel.find({ post: postId })
@@ -129,6 +153,20 @@ let ForumService = class ForumService {
         await comment.save();
         const post = await this.postModel.findByIdAndUpdate(comment.post, { isAnswered: true }, { new: true }).exec();
         return { comment, post };
+    }
+    async getForumStats() {
+        const [totalPosts, totalComments, totalViews] = await Promise.all([
+            this.postModel.countDocuments(),
+            this.commentModel.countDocuments(),
+            this.postModel.aggregate([
+                { $group: { _id: null, total: { $sum: "$views" } } }
+            ]).then(result => result[0]?.total || 0)
+        ]);
+        return {
+            totalPosts,
+            totalComments,
+            totalViews
+        };
     }
 };
 exports.ForumService = ForumService;

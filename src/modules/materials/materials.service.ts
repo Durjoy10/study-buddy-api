@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { CreateMaterialDto } from './dto/create-material.dto';
+import { CreateMarketplaceItemDto } from './dto/create-material.dto';
 import { UpdateMaterialDto } from './dto/update-material.dto';
 import { Material } from './schemas/material.schema';
 import { Purchase } from './schemas/purchase.schema';
@@ -13,25 +13,21 @@ export class MaterialsService {
         @InjectModel(Purchase.name) private purchaseModel: Model<Purchase>,
     ) { }
 
-    async create(createMaterialDto: CreateMaterialDto, sellerId: Types.ObjectId): Promise<Material> {
+    async create(createMaterialDto: CreateMarketplaceItemDto, sellerId: Types.ObjectId): Promise<Material> {
         const material = new this.materialModel({
-            ...createMaterialDto,
-            seller: sellerId,
-            downloads: 0,
+            ...createMaterialDto
         });
         return material.save();
     }
 
     async findAll(query: any = {}): Promise<Material[]> {
         return this.materialModel.find(query)
-            .populate('seller', 'name email profilePicture')
             .sort({ createdAt: -1 })
             .exec();
     }
 
     async findOne(id: string): Promise<Material> {
         const material = await this.materialModel.findById(id)
-            .populate('seller', 'name email profilePicture')
             .exec();
         if (!material) {
             throw new NotFoundException('Material not found');
@@ -78,7 +74,6 @@ export class MaterialsService {
         const purchase = new this.purchaseModel({
             material: materialId,
             buyer: buyerId,
-            seller: material.seller,
             price: material.price,
             status: 'Pending',
         });
@@ -161,7 +156,6 @@ export class MaterialsService {
                 { tags: { $in: [new RegExp(query, 'i')] } },
             ],
         })
-            .populate('seller', 'name email profilePicture')
             .sort({ createdAt: -1 })
             .exec();
     }

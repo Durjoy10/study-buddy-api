@@ -22,4 +22,9 @@ export declare class ForumService {
         comment: Comment;
         post: Post;
     }>;
+    getForumStats(): Promise<{
+        totalPosts: number;
+        totalComments: number;
+        totalViews: number;
+    }>;
 }

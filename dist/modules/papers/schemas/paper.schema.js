@@ -34,6 +34,16 @@ __decorate([
     (0, mongoose_1.Prop)({ required: true }),
     __metadata("design:type", String)
 ], Paper.prototype, "filePath", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({
+        required: true,
+        type: {
+            name: { type: String, required: true },
+            email: { type: String, required: true }
+        }
+    }),
+    __metadata("design:type", Object)
+], Paper.prototype, "uploadedBy", void 0);
 exports.Paper = Paper = __decorate([
     (0, mongoose_1.Schema)({ timestamps: true })
 ], Paper);

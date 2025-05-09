@@ -21,12 +21,13 @@ const roles_guard_1 = require("../../common/guards/roles.guard");
 const create_comment_dto_1 = require("./dto/create-comment.dto");
 const create_post_dto_1 = require("./dto/create-post.dto");
 const forum_service_1 = require("./forum.service");
+const mongoose_1 = require("mongoose");
 let ForumController = class ForumController {
     constructor(forumService) {
         this.forumService = forumService;
     }
-    async createPost(createPostDto, req) {
-        return this.forumService.createPost(createPostDto, req.user._id);
+    async createPost(createPostDto) {
+        return this.forumService.createPost(createPostDto, new mongoose_1.Types.ObjectId("000000000000000000000000"));
     }
     async findAllPosts() {
         return this.forumService.findAllPosts();
@@ -43,8 +44,9 @@ let ForumController = class ForumController {
     async togglePostLike(id, req) {
         return this.forumService.toggleLike(id, req.user._id);
     }
-    async createComment(createCommentDto, req) {
-        return this.forumService.createComment(createCommentDto, req.user._id);
+    async createComment(createCommentDto) {
+        const defaultAuthorId = new mongoose_1.Types.ObjectId('000000000000000000000000');
+        return this.forumService.createComment(createCommentDto, defaultAuthorId);
     }
     async findCommentsByPost(postId) {
         return this.forumService.findCommentsByPost(postId);
@@ -61,17 +63,18 @@ let ForumController = class ForumController {
     async markCommentAsAnswer(id) {
         return this.forumService.markCommentAsAnswer(id);
     }
+    async getForumStats() {
+        return this.forumService.getForumStats();
+    }
 };
 exports.ForumController = ForumController;
 __decorate([
     (0, common_1.Post)('posts'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, swagger_1.ApiOperation)({ summary: 'Create a new post' }),
     (0, swagger_1.ApiResponse)({ status: 201, description: 'Post created successfully' }),
     __param(0, (0, common_1.Body)()),
-    __param(1, (0, common_1.Request)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [create_post_dto_1.CreatePostDto, Object]),
+    __metadata("design:paramtypes", [create_post_dto_1.CreatePostDto]),
     __metadata("design:returntype", Promise)
 ], ForumController.prototype, "createPost", null);
 __decorate([
@@ -121,12 +124,10 @@ __decorate([
 ], ForumController.prototype, "togglePostLike", null);
 __decorate([
     (0, common_1.Post)('comments'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, swagger_1.ApiOperation)({ summary: 'Create a new comment' }),
     __param(0, (0, common_1.Body)()),
-    __param(1, (0, common_1.Request)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [create_comment_dto_1.CreateCommentDto, Object]),
+    __metadata("design:paramtypes", [create_comment_dto_1.CreateCommentDto]),
     __metadata("design:returntype", Promise)
 ], ForumController.prototype, "createComment", null);
 __decorate([
@@ -175,6 +176,13 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], ForumController.prototype, "markCommentAsAnswer", null);
+__decorate([
+    (0, common_1.Get)('stats'),
+    (0, swagger_1.ApiOperation)({ summary: 'Get forum statistics' }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], ForumController.prototype, "getForumStats", null);
 exports.ForumController = ForumController = __decorate([
     (0, swagger_1.ApiTags)('forum'),
     (0, common_1.Controller)('forum'),

@@ -36,6 +36,13 @@ let PapersController = class PapersController {
     findOne(id) {
         return this.papersService.findOne(id);
     }
+    async downloadPaper(id, res) {
+        const paper = await this.papersService.findOne(id);
+        if (!paper) {
+            throw new common_1.BadRequestException('Paper not found');
+        }
+        return res.sendFile((0, path_1.join)(process.cwd(), paper.filePath));
+    }
 };
 exports.PapersController = PapersController;
 __decorate([
@@ -49,6 +56,7 @@ __decorate([
                 subject: { type: 'string' },
                 semester: { type: 'string' },
                 email: { type: 'string' },
+                name: { type: 'string' },
                 file: {
                     type: 'string',
                     format: 'binary',
@@ -93,6 +101,14 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], PapersController.prototype, "findOne", null);
+__decorate([
+    (0, common_1.Get)(':id/download'),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Res)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], PapersController.prototype, "downloadPaper", null);
 exports.PapersController = PapersController = __decorate([
     (0, swagger_1.ApiTags)('papers'),
     (0, common_1.Controller)('papers'),

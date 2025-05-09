@@ -1,5 +1,5 @@
 import { Model, Types } from 'mongoose';
-import { CreateMaterialDto } from './dto/create-material.dto';
+import { CreateMarketplaceItemDto } from './dto/create-material.dto';
 import { UpdateMaterialDto } from './dto/update-material.dto';
 import { Material } from './schemas/material.schema';
 import { Purchase } from './schemas/purchase.schema';
@@ -7,7 +7,7 @@ export declare class MaterialsService {
     private materialModel;
     private purchaseModel;
     constructor(materialModel: Model<Material>, purchaseModel: Model<Purchase>);
-    create(createMaterialDto: CreateMaterialDto, sellerId: Types.ObjectId): Promise<Material>;
+    create(createMaterialDto: CreateMarketplaceItemDto, sellerId: Types.ObjectId): Promise<Material>;
     findAll(query?: any): Promise<Material[]>;
     findOne(id: string): Promise<Material>;
     update(id: string, updateMaterialDto: UpdateMaterialDto): Promise<Material>;

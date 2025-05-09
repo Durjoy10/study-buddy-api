@@ -1,10 +1,9 @@
-import { CreateMaterialDto } from './dto/create-material.dto';
 import { UpdateMaterialDto } from './dto/update-material.dto';
 import { MaterialsService } from './materials.service';
 export declare class MaterialsController {
     private readonly materialsService;
     constructor(materialsService: MaterialsService);
-    create(createMaterialDto: CreateMaterialDto, req: any): Promise<import("./schemas/material.schema").Material>;
+    create(files: Express.Multer.File[], body: any, req: any): Promise<import("./schemas/material.schema").Material>;
     findAll(query: any): Promise<import("./schemas/material.schema").Material[]>;
     search(query: string): Promise<import("./schemas/material.schema").Material[]>;
     findOne(id: string): Promise<import("./schemas/material.schema").Material>;

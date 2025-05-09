@@ -1,11 +1,14 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Request, UseGuards, UseInterceptors, UploadedFiles } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Roles } from '../../common/decorators/roles.decorator';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
-import { CreateMaterialDto } from './dto/create-material.dto';
+import { CreateMarketplaceItemDto } from './dto/create-material.dto';
 import { UpdateMaterialDto } from './dto/update-material.dto';
 import { MaterialsService } from './materials.service';
+import { FilesInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { extname } from 'path';
 
 @ApiTags('materials')
 @Controller('materials')
@@ -14,9 +17,29 @@ export class MaterialsController {
 
     @Post()
     @UseGuards(JwtAuthGuard)
+    @UseInterceptors(FilesInterceptor('images', 10, {
+      storage: diskStorage({
+        destination: './uploads/marketplace',
+        filename: (req, file, cb) => {
+          const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+          cb(null, uniqueSuffix + extname(file.originalname));
+        }
+      })
+    }))
     @ApiOperation({ summary: 'Create a new material' })
-    async create(@Body() createMaterialDto: CreateMaterialDto, @Request() req) {
-        return this.materialsService.create(createMaterialDto, req.user._id);
+    async create(
+      @UploadedFiles() files: Express.Multer.File[],
+      @Body() body: any,
+      @Request() req
+    ) {
+      // Convert price to number and build images array
+      const images = files.map(file => `/uploads/marketplace/${file.filename}`);
+      const dto = {
+        ...body,
+        images,
+        price: Number(body.price),
+      };
+      return this.materialsService.create(dto, req.user._id);
     }
 
     @Get()

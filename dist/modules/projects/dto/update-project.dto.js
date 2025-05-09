@@ -28,29 +28,71 @@ __decorate([
     __metadata("design:type", String)
 ], UpdateProjectDto.prototype, "description", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({ example: ['user456', 'user789'], required: false }),
+    (0, swagger_1.ApiProperty)({ example: 'Web Development', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateProjectDto.prototype, "category", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Fall 2023', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateProjectDto.prototype, "semester", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'CSE470 - Software Engineering', required: false }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateProjectDto.prototype, "course", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 2024, required: false }),
+    (0, class_validator_1.IsNumber)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Number)
+], UpdateProjectDto.prototype, "year", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: ['React', 'Node.js', 'MongoDB'], required: false }),
     (0, class_validator_1.IsArray)(),
     (0, class_validator_1.IsString)({ each: true }),
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", Array)
-], UpdateProjectDto.prototype, "members", void 0);
+], UpdateProjectDto.prototype, "technologies", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({ example: ['mobile', 'education', 'collaboration'], required: false }),
+    (0, swagger_1.ApiProperty)({ example: ['web', 'mobile', 'education'], required: false }),
     (0, class_validator_1.IsArray)(),
     (0, class_validator_1.IsString)({ each: true }),
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", Array)
 ], UpdateProjectDto.prototype, "tags", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({ example: 'completed', required: false }),
-    (0, class_validator_1.IsString)(),
+    (0, swagger_1.ApiProperty)({ example: 'https://example.com/thumbnail.jpg', required: false }),
+    (0, class_validator_1.IsUrl)(),
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
-], UpdateProjectDto.prototype, "status", void 0);
+], UpdateProjectDto.prototype, "thumbnailUrl", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({ example: '2024-01-01', required: false }),
-    (0, class_validator_1.IsDate)(),
+    (0, swagger_1.ApiProperty)({ example: 'https://example.com/project.zip', required: false }),
+    (0, class_validator_1.IsUrl)(),
     (0, class_validator_1.IsOptional)(),
-    __metadata("design:type", Date)
-], UpdateProjectDto.prototype, "endDate", void 0);
+    __metadata("design:type", String)
+], UpdateProjectDto.prototype, "fileURL", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'https://github.com/username/repo', required: false }),
+    (0, class_validator_1.IsUrl)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateProjectDto.prototype, "repositoryUrl", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'https://demo.example.com', required: false }),
+    (0, class_validator_1.IsUrl)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateProjectDto.prototype, "demoUrl", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: ['user456', 'user789'], required: false }),
+    (0, class_validator_1.IsArray)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Array)
+], UpdateProjectDto.prototype, "collaborators", void 0);
 //# sourceMappingURL=update-project.dto.js.map

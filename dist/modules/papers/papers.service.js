@@ -25,6 +25,10 @@ let PapersService = class PapersService {
         const createdPaper = new this.paperModel({
             ...createPaperDto,
             filePath,
+            uploadedBy: {
+                name: createPaperDto.name,
+                email: createPaperDto.email
+            }
         });
         return createdPaper.save();
     }

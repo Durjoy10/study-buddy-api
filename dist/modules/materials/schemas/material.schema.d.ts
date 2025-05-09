@@ -1,23 +1,18 @@
-import { Document, Types } from 'mongoose';
-export type MaterialDocument = Material & Document;
+import { Document } from 'mongoose';
 export declare class Material {
     title: string;
     description: string;
-    course: string;
-    type: string;
-    fileUrl: string;
-    thumbnailUrl: string;
+    condition: string;
+    category: string;
+    sellerName: string;
+    sellerNumber: string;
+    images: string[];
     price: number;
-    seller: Types.ObjectId;
-    downloads: number;
-    department: string;
-    semester: string;
-    year: number;
-    tags: string[];
-    isApproved: boolean;
+    url: string;
 }
+export type MaterialDocument = Material & Document;
 export declare const MaterialSchema: import("mongoose").Schema<Material, import("mongoose").Model<Material, any, any, any, Document<unknown, any, Material> & Material & {
-    _id: Types.ObjectId;
+    _id: import("mongoose").Types.ObjectId;
 }, any>, {}, {}, {}, {}, import("mongoose").DefaultSchemaOptions, Material, Document<unknown, {}, import("mongoose").FlatRecord<Material>> & import("mongoose").FlatRecord<Material> & {
-    _id: Types.ObjectId;
+    _id: import("mongoose").Types.ObjectId;
 }>;

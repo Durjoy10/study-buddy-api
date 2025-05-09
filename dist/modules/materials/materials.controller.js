@@ -18,15 +18,23 @@ const swagger_1 = require("@nestjs/swagger");
 const roles_decorator_1 = require("../../common/decorators/roles.decorator");
 const jwt_auth_guard_1 = require("../../common/guards/jwt-auth.guard");
 const roles_guard_1 = require("../../common/guards/roles.guard");
-const create_material_dto_1 = require("./dto/create-material.dto");
 const update_material_dto_1 = require("./dto/update-material.dto");
 const materials_service_1 = require("./materials.service");
+const platform_express_1 = require("@nestjs/platform-express");
+const multer_1 = require("multer");
+const path_1 = require("path");
 let MaterialsController = class MaterialsController {
     constructor(materialsService) {
         this.materialsService = materialsService;
     }
-    async create(createMaterialDto, req) {
-        return this.materialsService.create(createMaterialDto, req.user._id);
+    async create(files, body, req) {
+        const images = files.map(file => `/uploads/marketplace/${file.filename}`);
+        const dto = {
+            ...body,
+            images,
+            price: Number(body.price),
+        };
+        return this.materialsService.create(dto, req.user._id);
     }
     async findAll(query) {
         return this.materialsService.findAll(query);
@@ -66,11 +74,21 @@ exports.MaterialsController = MaterialsController;
 __decorate([
     (0, common_1.Post)(),
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FilesInterceptor)('images', 10, {
+        storage: (0, multer_1.diskStorage)({
+            destination: './uploads/marketplace',
+            filename: (req, file, cb) => {
+                const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+                cb(null, uniqueSuffix + (0, path_1.extname)(file.originalname));
+            }
+        })
+    })),
     (0, swagger_1.ApiOperation)({ summary: 'Create a new material' }),
-    __param(0, (0, common_1.Body)()),
-    __param(1, (0, common_1.Request)()),
+    __param(0, (0, common_1.UploadedFiles)()),
+    __param(1, (0, common_1.Body)()),
+    __param(2, (0, common_1.Request)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [create_material_dto_1.CreateMaterialDto, Object]),
+    __metadata("design:paramtypes", [Array, Object, Object]),
     __metadata("design:returntype", Promise)
 ], MaterialsController.prototype, "create", null);
 __decorate([

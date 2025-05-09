@@ -1,7 +1,20 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Document, Types } from 'mongoose';
 
-export type UserDocument = User & Document;
+export interface IUser {
+    email: string;
+    password: string;
+    name: string;
+    profilePicture: string;
+    role: string;
+    department: string;
+    studentId: string;
+    isEmailVerified: boolean;
+    lastLogin: Date;
+    resetPasswordToken: string;
+    resetPasswordExpires: Date;
+    _id: Types.ObjectId;
+}
 
 @Schema({ timestamps: true })
 export class User {
@@ -38,5 +51,7 @@ export class User {
     @Prop()
     resetPasswordExpires: Date;
 }
+
+export type UserDocument = User & Document;
 
 export const UserSchema = SchemaFactory.createForClass(User); 

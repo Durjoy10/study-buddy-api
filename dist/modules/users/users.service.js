@@ -26,7 +26,11 @@ let UsersService = class UsersService {
         return createdUser.save();
     }
     async findAll() {
-        return this.userModel.find().exec();
+        const users = await this.userModel.find().exec();
+        return users.map(user => {
+            const { password, ...result } = user.toObject();
+            return result;
+        });
     }
     async findOne(id) {
         const user = await this.userModel.findById(id).exec();
@@ -36,7 +40,11 @@ let UsersService = class UsersService {
         return user;
     }
     async findByEmail(email) {
-        return this.userModel.findOne({ email }).exec();
+        const user = await this.userModel.findOne({ email }).exec();
+        if (!user) {
+            throw new common_1.NotFoundException(`User with email ${email} not found`);
+        }
+        return user;
     }
     async update(id, updateUserDto) {
         const updatedUser = await this.userModel
@@ -45,14 +53,16 @@ let UsersService = class UsersService {
         if (!updatedUser) {
             throw new common_1.NotFoundException(`User with ID ${id} not found`);
         }
-        return updatedUser;
+        const { password, ...result } = updatedUser.toObject();
+        return result;
     }
     async remove(id) {
         const deletedUser = await this.userModel.findByIdAndDelete(id).exec();
         if (!deletedUser) {
             throw new common_1.NotFoundException(`User with ID ${id} not found`);
         }
-        return deletedUser;
+        const { password, ...result } = deletedUser.toObject();
+        return result;
     }
 };
 exports.UsersService = UsersService;

@@ -4,6 +4,7 @@ const multer = require('multer');
 const path = require('path');
 const auth = require('../middleware/auth');
 const QuestionPaper = require('../models/QuestionPaper');
+const cors = require('cors');
 
 // Configure multer for file upload
 const storage = multer.diskStorage({
